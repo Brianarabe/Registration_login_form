@@ -1,0 +1,103 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Broker Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Properties</h5>
+                <h2 class="display-4">{{ properties.count }}</h2>
+                <a href="{% url 'broker_properties' %}" class="text-white">View All</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Active Agents</h5>
+                <h2 class="display-4">{{ agents.count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Recent Activity</h5>
+                <p class="card-text">Last login: {{ user.last_login|date:"M d, Y" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>Recent Properties</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Address</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for property in properties|slice:":5" %}
+                    <tr>
+                        <td>{{ property.address }}</td>
+                        <td>{{ property.get_property_type_display }}</td>
+                        <td>${{ property.price }}</td>
+                        <td>
+                            <span class="badge bg-{% if property.status == 'AVA' %}success{% else %}warning{% endif %}">
+                                {{ property.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'broker_property_detail' property.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">No properties found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h4>My Agents</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {% for agent in agents|slice:":4" %}
+            <div class="col-md-3 mb-3">
+                <div class="card">
+                    <img src="{{ agent.profile_picture.url|default:'/static/images/default-profile.png' }}" 
+                         class="card-img-top" alt="{{ agent.user.get_full_name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ agent.user.get_full_name }}</h5>
+                        <p class="card-text">License: {{ agent.license_number }}</p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-center">No agents registered under you.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

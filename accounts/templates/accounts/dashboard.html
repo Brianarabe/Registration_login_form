@@ -1,0 +1,18 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Welcome, {{ request.user.username }}!</h1>
+    <p>You are logged in as a {{ user_type }}.</p>
+    
+    {% if user_type == 'broker' %}
+        <h2>Broker Dashboard</h2>
+        <p>Company: {{ request.user.broker.company_name }}</p>
+        <!-- Add more broker-specific content -->
+    {% elif user_type == 'agent' %}
+        <h2>Agent Dashboard</h2>
+        <p>Working with: {{ request.user.agent.broker.company_name }}</p>
+        <!-- Add more agent-specific content -->
+    {% endif %}
+</div>
+{% endblock %}
